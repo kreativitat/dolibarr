@@ -916,7 +916,16 @@ if ($sall) {
 $moreforfilter = '';
 if (isModEnabled('categorie') && $user->hasRight('categorie', 'read')) {
 	$formcategory = new FormCategory($db);
-	$moreforfilter .= $formcategory->getFilterBox(Categorie::TYPE_PRODUCT, $searchCategoryProductList, 'minwidth300', $searchCategoryProductOperator ? $searchCategoryProductOperator : 0);
+	$type = Categorie::TYPE_PRODUCT;
+	GETPOST("search_category_".$type."_list");
+	$categoryArray = $formcategory->select_all_categories($type, '', '', 64, 0, 1);
+    if ($nocateg) {
+        $categoryArray[-2] = "- ".$langs->trans('NotCategorized')." -";
+    }
+    $htmlName = "search_category_".$type."_list";
+    $htmlName2 = "search_category_".$type."_operator";
+    $moreforfilter .= Form::multiselectarray($htmlName, $categoryArray, $searchCategoryProductList, 0, 0, $morecss, 0, 0, '', '', $tmptitle);
+    $moreforfilter .= ' <input type="checkbox" class="valignmiddle" id="'.$htmlName2.'" name="'.$htmlName2.'" value="1"'.($searchCategoryProductOperator == 1 ? ' checked="checked"' : '').'/><label class="none valignmiddle" for="'.$htmlName2.'">'.$langs->trans('UseOrOperatorForCategories').'</label>';
 }
 
 // Show/hide child variant products
